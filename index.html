@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="OceanStage">
+<title>OceanStage</title>
+<link rel="manifest" href="manifest.json">
+<style>
+:root{
+  --blue:#007AFF;--blue-light:#E8F2FF;--blue-mid:#4DA3FF;--blue-dark:#0051A8;
+  --bg:#F2F2F7;--card:#FFFFFF;--text:#1C1C1E;--text2:#6C6C70;--text3:#AEAEB2;
+  --border:rgba(0,0,0,0.08);--sep:rgba(0,0,0,0.06);
+  --safe-bottom:env(safe-area-inset-bottom,0px);--radius:13px;--radius-sm:9px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',sans-serif;color:var(--text);overscroll-behavior:none;}
+body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;position:relative;min-height:100dvh;}
+
+/* TOP BAR */
+.topbar{background:rgba(242,242,247,0.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding:52px 20px 10px;position:sticky;top:0;z-index:100;border-bottom:0.5px solid var(--border);}
+.topbar-row{display:flex;align-items:center;justify-content:space-between;}
+.topbar-brand{font-size:22px;font-weight:800;letter-spacing:-0.5px;color:var(--text);}
+.topbar-actions{display:flex;align-items:center;gap:10px;}
+.topbar-btn{width:34px;height:34px;border-radius:50%;background:var(--bg);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:17px;position:relative;}
+.notif-dot{position:absolute;top:4px;right:4px;width:8px;height:8px;border-radius:50%;background:#FF3B30;border:1.5px solid var(--bg);}
+.topbar-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--blue-mid));border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;}
+
+/* SCROLL */
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 16px calc(90px + var(--safe-bottom));}
+
+/* SEC TITLE */
+.sec-title{font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin:20px 0 8px 4px;}
+.sec-title:first-child{margin-top:0;}
+
+/* CARD */
+.card{background:var(--card);border-radius:var(--radius);overflow:hidden;margin-bottom:8px;}
+.card-row{display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:0.5px solid var(--sep);cursor:pointer;transition:background .12s;}
+.card-row:last-child{border-bottom:none;}
+.card-row:active{background:var(--bg);}
+.row-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.row-body{flex:1;min-width:0;}
+.row-title{font-size:16px;font-weight:500;}
+.row-sub{font-size:13px;color:var(--text2);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.row-right{display:flex;align-items:center;gap:4px;color:var(--text3);}
+.badge{background:var(--blue);color:#fff;font-size:11px;font-weight:600;border-radius:10px;padding:1px 7px;}
+.badge-red{background:#FF3B30;}
+.chev{width:16px;height:16px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+
+/* BOTTOM NAV */
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:rgba(242,242,247,0.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:0.5px solid var(--border);padding:8px 0 calc(8px + var(--safe-bottom));display:flex;z-index:200;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 0;}
+.nav-icon{font-size:22px;line-height:1;}
+.nav-label{font-size:10px;font-weight:500;color:var(--text3);}
+.nav-item.active .nav-label{color:var(--blue);}
+.nav-dot{display:none;width:5px;height:5px;border-radius:50%;background:var(--blue);margin-top:-2px;}
+.nav-item.active .nav-dot{display:block;}
+
+/* PAGES */
+.page{display:none;flex-direction:column;height:100%;}
+.page.active{display:flex;}
+
+/* ── HERO CAROUSEL ── */
+.hero-carousel{border-radius:var(--radius);overflow:hidden;margin-bottom:8px;position:relative;}
+.hero-track{display:flex;transition:transform .35s ease;}
+.hero-slide{min-width:100%;border-radius:var(--radius);overflow:hidden;cursor:pointer;}
+.hero-slide-inner{padding:20px;color:#fff;}
+.hero-tag{font-size:11px;font-weight:600;opacity:.8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+.hero-title{font-size:19px;font-weight:700;line-height:1.3;margin-bottom:4px;}
+.hero-sub{font-size:13px;opacity:.85;margin-bottom:12px;}
+.hero-row{display:flex;gap:8px;}
+.hero-btn{background:rgba(255,255,255,.25);border:none;border-radius:20px;padding:7px 14px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;}
+.hero-btn.solid{background:#fff;}
+.hero-dots{display:flex;gap:5px;justify-content:center;margin-top:8px;}
+.hero-dot{width:6px;height:6px;border-radius:50%;background:var(--text3);transition:background .2s,width .2s;}
+.hero-dot.active{background:var(--blue);width:16px;border-radius:3px;}
+
+/* FOLLOWING STRIP */
+.following-strip{display:flex;gap:10px;overflow-x:auto;padding:0 0 4px;scrollbar-width:none;margin-bottom:8px;align-items:flex-start;}
+.following-strip::-webkit-scrollbar{display:none;}
+.follow-item{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;flex-shrink:0;}
+.follow-avatar{width:56px;height:56px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:22px;background:var(--card);position:relative;overflow:hidden;}
+.follow-avatar.add-btn{background:var(--bg);border:1.5px dashed var(--text3);}
+.follow-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.follow-avatar .live-ring{position:absolute;inset:-2px;border-radius:50%;border:2px solid var(--blue);}
+.follow-name{font-size:11px;color:var(--text2);max-width:60px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+/* VOTE BLOCK */
+.vote-block{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:8px;}
+.vote-item{margin-bottom:14px;}
+.vote-item:last-child{margin-bottom:0;}
+.vote-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.vote-name{font-size:15px;font-weight:600;}
+.vote-count{font-size:12px;color:var(--text2);}
+.vote-bar-bg{background:var(--bg);border-radius:4px;height:6px;margin-bottom:6px;}
+.vote-bar{height:6px;border-radius:4px;background:var(--blue);transition:width .5s ease;}
+.vote-row{display:flex;align-items:center;justify-content:space-between;}
+.vote-pct{font-size:12px;color:var(--text2);}
+.vote-btn{background:var(--blue-light);color:var(--blue);font-size:12px;font-weight:600;border-radius:7px;padding:5px 14px;border:none;cursor:pointer;}
+.vote-btn:disabled{opacity:.45;background:var(--bg);color:var(--text3);}
+.vote-btn.voted{background:var(--blue);color:#fff;}
+
+/* BIRTHDAY BLOCK */
+.birthday-block{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:8px;}
+.bday-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:.5px solid var(--sep);}
+.bday-item:last-child{border-bottom:none;}
+.bday-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.bday-info{flex:1;}
+.bday-name{font-size:15px;font-weight:500;}
+.bday-group{font-size:12px;color:var(--text2);}
+.bday-btn{background:var(--blue-light);color:var(--blue);border:none;border-radius:7px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;}
+
+/* CALENDAR */
+.cal-filter{display:flex;gap:6px;overflow-x:auto;padding:0 0 8px;scrollbar-width:none;}
+.cal-filter::-webkit-scrollbar{display:none;}
+.filter-chip{white-space:nowrap;border:.5px solid var(--border);background:var(--card);border-radius:20px;padding:6px 14px;font-size:13px;cursor:pointer;color:var(--text2);flex-shrink:0;}
+.filter-chip.active{background:var(--blue);color:#fff;border-color:var(--blue);}
+.cal-header{display:flex;align-items:center;justify-content:space-between;padding:0 4px;margin-bottom:12px;}
+.cal-month{font-size:17px;font-weight:600;}
+.cal-nav{width:32px;height:32px;border-radius:50%;background:var(--bg);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--blue);}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:8px;}
+.cal-wd{font-size:11px;font-weight:500;color:var(--text2);text-align:center;padding:4px 0;}
+.cal-day-cell{display:flex;flex-direction:column;align-items:center;cursor:pointer;padding:2px 1px;}
+.cal-day-num{width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:14px;border-radius:50%;}
+.cal-day-num.today{background:var(--blue);color:#fff;font-weight:600;}
+.cal-day-num.has-event{background:var(--blue-light);color:var(--blue);font-weight:600;}
+.cal-day-num.today.has-event{background:var(--blue);color:#fff;}
+.cal-day-num.other-month{color:var(--text3);}
+.cal-event-mini{font-size:9px;line-height:1.2;text-align:center;width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:42px;}
+
+/* SINGLE ACCORDION */
+.big-accordion{background:var(--card);border-radius:var(--radius);margin-bottom:8px;overflow:hidden;}
+.big-accordion-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;user-select:none;}
+.big-accordion-title{font-size:15px;font-weight:600;}
+.big-accordion-arrow{transition:transform .2s;color:var(--text3);}
+.big-accordion-arrow.open{transform:rotate(90deg);}
+.big-accordion-body{overflow:hidden;transition:max-height .35s ease;max-height:0;}
+.big-accordion-body.open{max-height:4000px;}
+.event-row{display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:.5px solid var(--sep);cursor:pointer;}
+.event-row:last-child{border-bottom:none;}
+.event-row:active{background:var(--bg);}
+.event-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.event-row-info{flex:1;min-width:0;}
+.event-row-title{font-size:14px;font-weight:600;}
+.event-row-meta{font-size:12px;color:var(--text2);margin-top:1px;}
+.event-detail{padding:16px;}
+.ev-detail-title{font-size:18px;font-weight:700;margin-bottom:4px;}
+.ev-detail-meta{font-size:13px;color:var(--text2);margin-bottom:14px;line-height:1.8;}
+.map-link-row{display:flex;gap:8px;margin-bottom:14px;}
+.map-link{flex:1;background:var(--blue-light);color:var(--blue);border:none;border-radius:9px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;text-align:center;}
+.like-btn{display:flex;align-items:center;gap:6px;background:var(--bg);border:none;border-radius:9px;padding:8px 14px;font-size:13px;font-weight:500;cursor:pointer;color:var(--text2);margin-bottom:14px;}
+.like-btn.liked{color:var(--blue);background:var(--blue-light);}
+.comment-input-row{display:flex;gap:8px;margin-top:10px;}
+.comment-input-row input{flex:1;background:var(--bg);border:none;border-radius:9px;padding:10px 12px;font-size:14px;font-family:inherit;color:var(--text);outline:none;}
+.comment-item{padding:8px 0;border-bottom:.5px solid var(--sep);}
+.comment-item:last-child{border-bottom:none;}
+.comment-author{font-size:12px;font-weight:600;color:var(--blue);margin-bottom:2px;}
+.comment-text{font-size:14px;line-height:1.5;}
+
+/* MAP */
+.map-container{width:100%;position:relative;background:linear-gradient(160deg,#D6EAFF,#B8D8FF);flex-shrink:0;}
+.map-overlay-label{position:absolute;top:10px;left:12px;background:rgba(255,255,255,.88);backdrop-filter:blur(10px);border-radius:10px;padding:5px 10px;font-size:12px;font-weight:600;color:var(--blue-dark);z-index:2;}
+.map-pin{cursor:pointer;}
+.sheet-drag-wrap{flex:1;display:flex;flex-direction:column;min-height:0;background:var(--bg);}
+.drag-handle-bar{width:36px;height:4px;background:var(--text3);border-radius:2px;margin:10px auto 0;flex-shrink:0;}
+.drag-section-title{font-size:13px;font-weight:600;color:var(--text2);padding:10px 16px 6px;flex-shrink:0;}
+.pins-scroll{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 16px 8px;}
+.time-filter{display:flex;gap:6px;overflow-x:auto;padding:6px 16px;scrollbar-width:none;flex-shrink:0;}
+.time-filter::-webkit-scrollbar{display:none;}
+.pin-card{background:var(--card);border-radius:var(--radius);margin-bottom:8px;overflow:hidden;}
+.pin-top{display:flex;gap:10px;padding:12px 14px;}
+.pin-thumb{width:56px;height:56px;border-radius:var(--radius-sm);background:var(--blue-light);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;}
+.pin-info{flex:1;min-width:0;}
+.pin-title{font-size:14px;font-weight:600;margin-bottom:2px;}
+.pin-meta{font-size:12px;color:var(--text2);line-height:1.6;}
+.pin-status-tag{display:inline-block;font-size:10px;font-weight:600;border-radius:10px;padding:2px 8px;margin-top:4px;}
+.status-active{background:#E5F8EC;color:#1C7C3A;}
+.status-done{background:var(--bg);color:var(--text3);}
+.pin-actions{display:flex;border-top:.5px solid var(--sep);}
+.pin-act-btn{flex:1;border:none;background:none;padding:10px;font-size:12px;font-weight:600;cursor:pointer;color:var(--text2);}
+.pin-act-btn:not(:last-child){border-right:.5px solid var(--sep);}
+.pin-act-btn.primary{color:var(--blue);}
+.pin-act-btn.danger{color:#FF3B30;}
+.comment-img-preview{max-width:100%;border-radius:8px;margin-top:6px;}
+
+/* TICKET */
+.ticket-card{background:var(--card);border-radius:var(--radius);padding:14px 16px;margin-bottom:8px;border:.5px solid var(--border);}
+.ticket-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;}
+.ticket-artist{font-size:15px;font-weight:600;}
+.ticket-price{font-size:14px;font-weight:700;color:var(--blue);}
+.ticket-meta{font-size:13px;color:var(--text2);line-height:1.7;}
+.ticket-cond{font-size:12px;color:#FF9500;background:#FFF8E8;border-radius:6px;padding:4px 10px;display:inline-block;margin:6px 0;}
+.ticket-footer{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:.5px solid var(--sep);}
+.ticket-user{font-size:12px;color:var(--text3);}
+.ticket-status-btn{font-size:11px;font-weight:600;border-radius:7px;padding:4px 10px;border:none;cursor:pointer;}
+.has-ticket{background:#E5F8EC;color:#1C7C3A;}
+.no-ticket{background:#FFEEE8;color:#CC3300;}
+.ticket-contact{background:var(--blue);color:#fff;border:none;border-radius:7px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;}
+.filter-icon-btn{width:36px;height:36px;border-radius:50%;background:var(--card);border:.5px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:16px;}
+
+/* MERCH */
+.merch-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.merch-card{background:var(--card);border-radius:var(--radius);overflow:hidden;cursor:pointer;border:.5px solid var(--border);}
+.merch-img{height:120px;display:flex;align-items:center;justify-content:center;font-size:36px;}
+.merch-body{padding:10px 12px 12px;}
+.merch-title{font-size:14px;font-weight:500;}
+.merch-artist{font-size:12px;color:var(--text2);margin-top:2px;}
+.merch-footer{display:flex;align-items:center;justify-content:space-between;margin-top:8px;}
+.merch-price{font-size:14px;font-weight:600;color:var(--blue);}
+
+/* VENUE */
+.venue-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.venue-card{background:var(--card);border-radius:var(--radius);overflow:hidden;cursor:pointer;border:.5px solid var(--border);}
+.venue-top{height:80px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--blue-dark);}
+.venue-info{padding:10px 12px 12px;}
+.venue-name{font-size:14px;font-weight:600;}
+.venue-cap{font-size:12px;color:var(--text2);margin-top:2px;}
+.venue-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px;}
+.vtag{font-size:10px;font-weight:600;background:var(--blue-light);color:var(--blue);border-radius:5px;padding:2px 7px;}
+.seat-view{background:linear-gradient(180deg,#1a1a2e,#16213e);border-radius:var(--radius);overflow:hidden;margin-top:8px;}
+.stage-bar{background:linear-gradient(90deg,#4DA3FF,#007AFF);text-align:center;padding:8px;font-size:12px;font-weight:700;color:#fff;letter-spacing:2px;}
+.seat-grid-wrap{padding:12px;}
+.seat-rows{display:flex;flex-direction:column;gap:3px;}
+.seat-row-line{display:flex;gap:2px;justify-content:center;}
+.seat{width:10px;height:8px;border-radius:2px;}
+.seat.gold{background:#FFD60A;}.seat.blue2{background:#4DA3FF;}.seat.purple2{background:#BF5AF2;}.seat.mt{background:rgba(255,255,255,.07);}
+.seat-legend{display:flex;gap:12px;padding:8px 12px;flex-wrap:wrap;}
+.leg-item{display:flex;align-items:center;gap:4px;font-size:11px;color:rgba(255,255,255,.7);}
+.leg-dot{width:8px;height:8px;border-radius:2px;}
+
+/* SHEETS */
+.sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:300;display:none;align-items:flex-end;justify-content:center;}
+.sheet-overlay.open{display:flex;}
+.sheet{background:var(--card);border-radius:20px 20px 0 0;width:100%;max-width:430px;padding:20px 20px calc(20px + var(--safe-bottom));max-height:85vh;overflow-y:auto;}
+.sheet-handle{width:36px;height:4px;background:var(--text3);border-radius:2px;margin:0 auto 16px;}
+.sheet-title{font-size:18px;font-weight:700;margin-bottom:16px;}
+.field{margin-bottom:14px;}
+.field label{font-size:13px;color:var(--text2);margin-bottom:6px;display:block;}
+.field input,.field select,.field textarea{width:100%;background:var(--bg);border:none;border-radius:var(--radius-sm);padding:11px 14px;font-size:15px;color:var(--text);font-family:inherit;outline:none;}
+.field textarea{resize:none;height:80px;}
+.submit-btn{width:100%;background:var(--blue);color:#fff;border:none;border-radius:var(--radius);padding:14px;font-size:16px;font-weight:600;cursor:pointer;margin-top:4px;}
+.warning-box{background:#FFF8E8;border:.5px solid #FFD60A;border-radius:var(--radius-sm);padding:10px 12px;font-size:12px;color:#7C5800;line-height:1.6;margin-bottom:14px;}
+.profile-header{display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 0 20px;}
+.profile-big-avatar{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--blue-mid));display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:#fff;}
+.profile-name{font-size:18px;font-weight:700;}
+.profile-handle{font-size:13px;color:var(--text2);}
+.notif-item{display:flex;gap:12px;padding:12px 0;border-bottom:.5px solid var(--sep);}
+.notif-item:last-child{border-bottom:none;}
+.notif-dot-unread{width:8px;height:8px;border-radius:50%;background:var(--blue);flex-shrink:0;margin-top:5px;}
+.notif-dot-read{width:8px;height:8px;border-radius:50%;background:transparent;flex-shrink:0;margin-top:5px;}
+.notif-text{font-size:13px;color:var(--text);line-height:1.5;flex:1;}
+.notif-time{font-size:11px;color:var(--text3);margin-top:2px;}
+
+/* TOAST */
+.toast{position:fixed;top:60px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--text);color:#fff;border-radius:20px;padding:10px 20px;font-size:14px;font-weight:500;z-index:500;transition:transform .3s;white-space:nowrap;pointer-events:none;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+/* FAB */
+.fab{position:fixed;bottom:calc(75px + var(--safe-bottom));right:20px;width:50px;height:50px;border-radius:50%;background:var(--blue);color:#fff;font-size:24px;border:none;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,122,255,.35);z-index:150;}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.page.active .scroll>*{animation:fadeIn .18s ease both;}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-row">
+    <div class="topbar-brand">OceanStage</div>
+    <div class="topbar-actions">
+      <button class="topbar-btn" onclick="openSheet('sheet-notif')" aria-label="通知">
+        🔔<div class="notif-dot"></div>
+      </button>
+      <button class="topbar-avatar" onclick="openSheet('sheet-profile')">我</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ HOME ══ -->
+<div class="page active" id="page-home">
+  <div class="scroll">
+
+    <!-- INSTALL BANNER -->
+    <div id="install-banner" style="background:var(--blue);color:#fff;border-radius:var(--radius);padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+      <span style="font-size:22px;flex-shrink:0">📲</span>
+      <div style="flex:1;font-size:13px;line-height:1.4">加入主畫面，即時接收應援通知</div>
+      <button onclick="openSheet('sheet-install-hint')" style="background:#fff;color:var(--blue);border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;">如何加入</button>
+      <button onclick="document.getElementById('install-banner').remove()" style="background:none;border:none;color:rgba(255,255,255,0.7);font-size:20px;cursor:pointer;padding:0;line-height:1;flex-shrink:0;">×</button>
+    </div>
+
+    <!-- FOLLOWING STRIP -->
+    <div class="following-strip" id="following-strip"></div>
+
+    <!-- HERO CAROUSEL -->
+    <div class="hero-carousel">
+      <div class="hero-track" id="hero-track"></div>
+      <div class="hero-dots" id="hero-dots"></div>
+    </div>
+
+    <!-- VOTE -->
+    <div class="sec-title">本週投票 · 來台活動</div>
+    <div class="vote-block" id="home-votes"></div>
+
+    <!-- BIRTHDAY -->
+    <div class="sec-title">本週壽星</div>
+    <div class="birthday-block" id="home-bdays"></div>
+
+    <!-- QUICK LINKS -->
+    <div class="sec-title">快速入口</div>
+    <div class="card">
+      <div class="card-row" onclick="goPage('map')">
+        <div class="row-icon" style="background:#E8F2FF">📍</div>
+        <div class="row-body"><div class="row-title">應援地圖</div><div class="row-sub">台北大巨蛋場｜今日 4 個應援點</div></div>
+        <div class="row-right"><span class="badge">4</span><svg class="chev" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+      <div class="card-row" onclick="goPage('calendar')">
+        <div class="row-icon" style="background:#E8FFE8">📅</div>
+        <div class="row-body"><div class="row-title">活動日程</div><div class="row-sub">本月 8 個演唱會 / 見面會</div></div>
+        <div class="row-right"><svg class="chev" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+      <div class="card-row" onclick="goPage('ticket')">
+        <div class="row-icon" style="background:#FFF0E8">🎟️</div>
+        <div class="row-body"><div class="row-title">讓票求票板</div><div class="row-sub">最新 3 筆讓票</div></div>
+        <div class="row-right"><span class="badge badge-red">新</span><svg class="chev" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+      <div class="card-row" onclick="goPage('merch')">
+        <div class="row-icon" style="background:#F0E8FF">🛍️</div>
+        <div class="row-body"><div class="row-title">飯製小賣場</div><div class="row-sub">本週上架 15 件新品</div></div>
+        <div class="row-right"><svg class="chev" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CALENDAR ══ -->
+<div class="page" id="page-calendar">
+  <div class="scroll">
+    <div class="cal-filter" id="cal-filter"></div>
+    <div class="card" style="padding:16px">
+      <div class="cal-header">
+        <button class="cal-nav" onclick="changeMonth(-1)">‹</button>
+        <div class="cal-month" id="cal-title"></div>
+        <button class="cal-nav" onclick="changeMonth(1)">›</button>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+    </div>
+    <!-- SINGLE BIG ACCORDION -->
+    <div class="big-accordion" id="event-big-accordion">
+      <div class="big-accordion-header" onclick="toggleBigAccordion()">
+        <div class="big-accordion-title" id="accordion-label">活動一覽</div>
+        <svg class="big-accordion-arrow" id="big-arr" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+      <div class="big-accordion-body" id="big-accordion-body">
+        <div id="all-events-list"></div>
+      </div>
+    </div>
+    <div style="height:8px"></div>
+    <button class="submit-btn" style="border-radius:var(--radius)" onclick="openSheet('sheet-event')">＋ 投稿新活動</button>
+    <div id="event-detail-panel"></div>
+  </div>
+</div>
+
+<!-- ══ MAP ══ -->
+<div class="page" id="page-map" style="overflow:hidden;">
+  <div class="map-container" style="height:45vh;min-height:200px;">
+    <div class="map-overlay-label">🗺 台北大巨蛋周邊</div>
+    <svg id="map-svg" width="100%" height="100%" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" style="display:block;">
+      <rect width="400" height="300" fill="#D6EAFF"/>
+      <rect x="0" y="130" width="400" height="28" fill="#C2DCFF" opacity=".7"/>
+      <rect x="170" y="0" width="28" height="300" fill="#C2DCFF" opacity=".7"/>
+      <rect x="0" y="180" width="400" height="16" fill="#BDDAFF" opacity=".5"/>
+      <rect x="60" y="50" width="80" height="60" rx="6" fill="#A8CCFF" opacity=".6"/>
+      <text x="100" y="85" text-anchor="middle" font-size="9" fill="#0051A8" font-family="system-ui" font-weight="600">台北大巨蛋</text>
+      <rect x="250" y="60" width="60" height="40" rx="4" fill="#A8CCFF" opacity=".4"/>
+      <rect x="60" y="200" width="50" height="40" rx="4" fill="#A8CCFF" opacity=".4"/>
+      <rect x="290" y="190" width="70" height="50" rx="4" fill="#A8CCFF" opacity=".4"/>
+      <line x1="0" y1="145" x2="400" y2="145" stroke="#FF6B35" stroke-width="3" stroke-dasharray="8 4" opacity=".7"/>
+      <circle cx="184" cy="144" r="6" fill="#FF6B35" stroke="white" stroke-width="1.5"/>
+      <text x="184" y="160" text-anchor="middle" font-size="8" fill="#CC4400" font-family="system-ui" font-weight="600">捷運站</text>
+      <g id="svg-pins"></g>
+    </svg>
+  </div>
+  <div class="sheet-drag-wrap">
+    <div class="drag-handle-bar"></div>
+    <div class="time-filter" id="map-time-filter"></div>
+    <div class="drag-section-title">應援發送點 <span id="pin-count" style="font-weight:400;color:var(--text3)"></span></div>
+    <div class="pins-scroll" id="pin-list"></div>
+  </div>
+  <button class="fab" id="map-fab" style="display:flex;" onclick="openSheet('sheet-pin')">＋</button>
+</div>
+
+<!-- ══ TICKET ══ -->
+<div class="page" id="page-ticket">
+  <div class="scroll">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+      <div class="cal-filter" style="flex:1;margin:0;padding:0;" id="ticket-filter"></div>
+      <div class="filter-icon-btn" onclick="openSheet('sheet-ticket-filter')">⚙️</div>
+    </div>
+    <div id="ticket-list"></div>
+    <button class="submit-btn" style="border-radius:var(--radius)" onclick="openSheet('sheet-ticket')">＋ 刊登讓票資訊</button>
+  </div>
+</div>
+
+<!-- ══ VENUE ══ -->
+<div class="page" id="page-venue">
+  <div class="scroll">
+    <div class="sec-title">選擇場館</div>
+    <div class="venue-grid" id="venue-grid"></div>
+    <div id="seat-section" style="display:none;margin-top:8px">
+      <div class="sec-title" id="seat-title">座位視角示意圖</div>
+      <div class="seat-view">
+        <div class="stage-bar">— STAGE —</div>
+        <div class="seat-grid-wrap"><div class="seat-rows" id="seat-rows"></div></div>
+        <div class="seat-legend">
+          <div class="leg-item"><div class="leg-dot" style="background:#FFD60A"></div>黃金內野</div>
+          <div class="leg-item"><div class="leg-dot" style="background:#4DA3FF"></div>一般藍區</div>
+          <div class="leg-item"><div class="leg-dot" style="background:#BF5AF2"></div>後方紫區</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MERCH ══ -->
+<div class="page" id="page-merch">
+  <div class="scroll">
+    <div class="cal-filter" id="merch-filter"></div>
+    <div class="merch-grid" id="merch-list"></div>
+    <div style="height:8px"></div>
+    <button class="submit-btn" style="border-radius:var(--radius)" onclick="openSheet('sheet-merch')">＋ 上架我的飯製品</button>
+  </div>
+</div>
+
+<!-- BOTTOM NAV: 首頁 活動 應援 讓票 場館 飯製 -->
+<nav class="nav">
+  <div class="nav-item active" onclick="goPage('home')">
+    <div class="nav-icon">🏠</div><div class="nav-dot"></div><div class="nav-label">首頁</div>
+  </div>
+  <div class="nav-item" onclick="goPage('calendar')">
+    <div class="nav-icon">📅</div><div class="nav-dot"></div><div class="nav-label">活動</div>
+  </div>
+  <div class="nav-item" onclick="goPage('map')">
+    <div class="nav-icon">📍</div><div class="nav-dot"></div><div class="nav-label">應援</div>
+  </div>
+  <div class="nav-item" onclick="goPage('ticket')">
+    <div class="nav-icon">🎟️</div><div class="nav-dot"></div><div class="nav-label">讓票</div>
+  </div>
+  <div class="nav-item" onclick="goPage('venue')">
+    <div class="nav-icon">🏟️</div><div class="nav-dot"></div><div class="nav-label">場館</div>
+  </div>
+  <div class="nav-item" onclick="goPage('merch')">
+    <div class="nav-icon">🛍️</div><div class="nav-dot"></div><div class="nav-label">飯製</div>
+  </div>
+</nav>
+
+<!-- ══ SHEETS ══ -->
+
+<!-- Event submit -->
+<div class="sheet-overlay" id="sheet-event" onclick="closeSheetOuter(event,'sheet-event')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">投稿新活動</div>
+    <div class="field"><label>藝人 / 團體</label><input type="text" placeholder="例：TOMORROW X TOGETHER"></div>
+    <div class="field"><label>活動類型</label><select><option>演唱會</option><option>見面會</option><option>粉絲簽名會</option><option>頒獎典禮</option></select></div>
+    <div class="field"><label>活動日期</label><input type="date"></div>
+    <div class="field"><label>場館</label><select><option>台北大巨蛋</option><option>台北小巨蛋</option><option>桃園國際棒球場</option><option>高雄巨蛋</option><option>其他</option></select></div>
+    <div class="field"><label>補充說明（選填）</label><textarea placeholder="開賣日期、票價資訊..."></textarea></div>
+    <button class="submit-btn" onclick="submitForm('sheet-event','✅ 投稿成功，待審核！')">送出投稿</button>
+  </div>
+</div>
+
+<!-- Pin submit -->
+<div class="sheet-overlay" id="sheet-pin" onclick="closeSheetOuter(event,'sheet-pin')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">新增應援發送點</div>
+    <div class="field"><label>應援物名稱</label><input type="text" id="new-pin-title" placeholder="例：TXT Yeonjun photocard 套組"></div>
+    <div class="field"><label>應援物縮圖 emoji</label><input type="text" id="new-pin-emoji" placeholder="例：💙" maxlength="2"></div>
+    <div class="field"><label>發送位置</label><input type="text" id="new-pin-loc" placeholder="例：南門外全家旁"></div>
+    <div class="field"><label>發送時間</label><select id="new-pin-time"><option>11:00–13:00</option><option>13:00–15:00</option><option>15:00–17:00</option><option>17:00–19:00</option></select></div>
+    <div class="field"><label>領取條件</label><input type="text" id="new-pin-cond" placeholder="例：免費、轉推、憑票根"></div>
+    <div class="field"><label>我的穿著</label><input type="text" id="new-pin-outfit" placeholder="例：藍色TXT帽T＋白裙"></div>
+    <div class="field"><label>聯絡 IG / Threads</label><input type="text" id="new-pin-contact" placeholder="例：@username"></div>
+    <button class="submit-btn" onclick="addPin()">新增應援點</button>
+  </div>
+</div>
+
+<!-- Pin comment -->
+<div class="sheet-overlay" id="sheet-comment" onclick="closeSheetOuter(event,'sheet-comment')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="comment-sheet-title">留言</div>
+    <div id="comment-sheet-list" style="max-height:260px;overflow-y:auto;"></div>
+    <div class="comment-input-row" style="margin-top:12px;padding-top:12px;border-top:.5px solid var(--sep)">
+      <input type="text" id="comment-text-input" placeholder="留言文字...">
+      <label style="cursor:pointer;background:var(--bg);border-radius:9px;padding:10px;font-size:16px;">📷<input type="file" accept="image/*" style="display:none" onchange="previewCommentImg(this)"></label>
+      <button onclick="submitComment()" style="background:var(--blue);color:#fff;border:none;border-radius:9px;padding:10px 14px;font-size:14px;cursor:pointer;">送</button>
+    </div>
+    <div id="comment-img-preview-wrap"></div>
+  </div>
+</div>
+
+<!-- Ticket submit -->
+<div class="sheet-overlay" id="sheet-ticket" onclick="closeSheetOuter(event,'sheet-ticket')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">刊登讓票資訊</div>
+    <div class="warning-box">⚠️ 本平台僅提供媒合服務，不介入金流。請自行確認對方身份防範詐騙。需手機號碼驗證才可刊登。</div>
+    <div class="field"><label>演唱會</label><select><option>TXT 2025 台北</option><option>aespa 台北</option><option>SEVENTEEN 台灣</option></select></div>
+    <div class="field"><label>場次日期</label><input type="date"></div>
+    <div class="field"><label>票區</label><select><option>黃金內野 A（NT$4,800）</option><option>黃金內野 B（NT$3,800）</option><option>一般 A（NT$2,800）</option><option>一般 B（NT$1,800）</option></select></div>
+    <div class="field"><label>張數</label><select><option>1 張</option><option>2 張</option><option>3 張</option></select></div>
+    <div class="field"><label>讓票條件</label><textarea placeholder="例：需提供粉絲帳號截圖..."></textarea></div>
+    <div class="field"><label>聯絡 IG / Threads</label><input type="text" placeholder="例：@your_ig"></div>
+    <button class="submit-btn" onclick="submitForm('sheet-ticket','🎟️ 讓票資訊已刊登！')">刊登讓票</button>
+  </div>
+</div>
+
+<!-- Ticket filter -->
+<div class="sheet-overlay" id="sheet-ticket-filter" onclick="closeSheetOuter(event,'sheet-ticket-filter')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">篩選條件</div>
+    <div class="field"><label>日期</label><input type="date" id="tf-date"></div>
+    <div class="field"><label>票價</label><select id="tf-price"><option value="">全部</option><option value="1800">NT$1,800</option><option value="2800">NT$2,800</option><option value="3800">NT$3,800</option><option value="4800">NT$4,800</option></select></div>
+    <div class="field"><label>帳號狀態</label><select id="tf-verified"><option value="">全部</option><option value="1">僅顯示已驗證</option></select></div>
+    <button class="submit-btn" onclick="applyTicketFilter()">套用篩選</button>
+  </div>
+</div>
+
+<!-- Merch submit -->
+<div class="sheet-overlay" id="sheet-merch" onclick="closeSheetOuter(event,'sheet-merch')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">上架飯製商品</div>
+    <div class="field"><label>商品名稱</label><input type="text" placeholder="例：TXT Yeonjun 壓克力立牌"></div>
+    <div class="field"><label>藝人 / 團體</label><input type="text" placeholder="例：TXT"></div>
+    <div class="field"><label>商品類型</label><select><option>卡片</option><option>手幅</option><option>貼紙</option><option>鑰匙圈</option><option>立牌</option></select></div>
+    <div class="field"><label>賣貨便連結</label><input type="text" placeholder="https://..."></div>
+    <div class="field"><label>商品說明</label><textarea placeholder="材質、尺寸..."></textarea></div>
+    <button class="submit-btn" onclick="submitForm('sheet-merch','🛍️ 商品已上架！')">上架商品</button>
+  </div>
+</div>
+
+<!-- PROFILE sheet -->
+<div class="sheet-overlay" id="sheet-profile" onclick="closeSheetOuter(event,'sheet-profile')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="profile-header">
+      <div class="profile-big-avatar">我</div>
+      <div class="profile-name">@oceanfan</div>
+      <div class="profile-handle">粉絲等級：核心粉絲 ⭐</div>
+    </div>
+    <div class="card" style="margin-bottom:8px">
+      <div class="card-row" onclick="showToast('📌 已收藏的活動')">
+        <div class="row-icon" style="background:#E8F2FF">📌</div>
+        <div class="row-body"><div class="row-title">我的收藏</div><div class="row-sub">活動、應援點、讓票</div></div>
+        <div class="row-right"><svg class="chev" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+      <div class="card-row" onclick="showToast('🎟️ 我的刊登')">
+        <div class="row-icon" style="background:#FFF0E8">🎟️</div>
+        <div class="row-body"><div class="row-title">我的刊登</div><div class="row-sub">讓票、應援點</div></div>
+        <div class="row-right"><svg class="chev" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+      <div class="card-row" onclick="openSheet('sheet-install-hint')">
+        <div class="row-icon" style="background:#E8FFE8">📲</div>
+        <div class="row-body"><div class="row-title">加入主畫面</div><div class="row-sub">安裝為 App，接收通知</div></div>
+        <div class="row-right"><svg class="chev" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+      <div class="card-row" onclick="showToast('⚙️ 設定')">
+        <div class="row-icon" style="background:#F1EFE8">⚙️</div>
+        <div class="row-body"><div class="row-title">帳號設定</div><div class="row-sub">手機驗證、通知偏好</div></div>
+        <div class="row-right"><svg class="chev" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+    </div>
+    <button class="submit-btn" style="background:var(--bg);color:var(--text2)" onclick="closeSheetById('sheet-profile')">關閉</button>
+  </div>
+</div>
+
+<!-- NOTIFICATIONS sheet -->
+<div class="sheet-overlay" id="sheet-notif" onclick="closeSheetOuter(event,'sheet-notif')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">通知</div>
+    <div id="notif-list"></div>
+  </div>
+</div>
+
+<!-- INSTALL HINT sheet -->
+<div class="sheet-overlay" id="sheet-install-hint" onclick="closeSheetOuter(event,'sheet-install-hint')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">📲 加入主畫面</div>
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-row" style="cursor:default">
+        <div class="row-icon" style="background:#E8F2FF;font-size:22px">🤖</div>
+        <div class="row-body">
+          <div class="row-title">Android（Chrome）</div>
+          <div class="row-sub" style="white-space:normal;line-height:1.5">點右上角三點選單 →「新增至主畫面」或「安裝應用程式」→ 確認安裝</div>
+        </div>
+      </div>
+      <div class="card-row" style="cursor:default">
+        <div class="row-icon" style="background:#F5E8FF;font-size:22px">🍎</div>
+        <div class="row-body">
+          <div class="row-title">iPhone（Safari）</div>
+          <div class="row-sub" style="white-space:normal;line-height:1.5">底部工具列點 分享 圖示（方框加箭頭）→「加入主畫面」→ 右上角「新增」</div>
+        </div>
+      </div>
+    </div>
+    <div style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:16px">加入後桌面出現 OceanStage 圖示，點開體驗與 App 相同，並可接收即時應援通知。</div>
+    <button class="submit-btn" onclick="closeSheetById('sheet-install-hint')">了解了</button>
+  </div>
+</div>
+
+<!-- FOLLOW ADD sheet -->
+<div class="sheet-overlay" id="sheet-follow-add" onclick="closeSheetOuter(event,'sheet-follow-add')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">新增關注偶像</div>
+    <div id="follow-add-list" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;"></div>
+    <button class="submit-btn" onclick="closeSheetById('sheet-follow-add')">完成</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══ DATA ═══
+const votes=[
+  {name:'TXT',votes:1840,emoji:'🌟'},
+  {name:'aespa',votes:1250,emoji:'🖤'},
+  {name:'SEVENTEEN',votes:980,emoji:'💎'},
+  {name:'BTS',votes:3200,emoji:'💜'},
+  {name:'BOYNEXTDOOR',votes:620,emoji:'🚪'},
+  {name:'Super Junior',votes:540,emoji:'👑'},
+];
+let myVote=null;
+
+const birthdays=[
+  {name:'Karina',group:'aespa',emoji:'⭐',bg:'#FFE8F5'},
+  {name:'Felix',group:'Stray Kids',emoji:'🔥',bg:'#FFE8E8'},
+  {name:'Jeno',group:'NCT',emoji:'💚',bg:'#E8FFE8'},
+];
+
+const allArtists=['TXT','aespa','SEVENTEEN','BTS','Super Junior','BOYNEXTDOOR','NCT','Stray Kids'];
+let followedArtists=['TXT','aespa','SEVENTEEN'];
+
+const heroSlides=[
+  {gradient:'linear-gradient(135deg,#007AFF,#4DA3FF)',tag:'本週熱門活動',title:'TOMORROW X TOGETHER\n2025 世界巡迴台北場',sub:'📅 2025年8月16–17日｜台北大巨蛋',btn1:{label:'查看應援地圖',page:'map'},btn2:{label:'日程詳情',page:'calendar'}},
+  {gradient:'linear-gradient(135deg,#BF5AF2,#9B59B6)',tag:'本週壽星 🎂',title:'Karina\naespa',sub:'📅 恭喜 Karina 生日快樂！',btn1:{label:'投稿祝賀圖',page:'home'},btn2:{label:'查看 aespa 活動',page:'calendar'}},
+  {gradient:'linear-gradient(135deg,#32ADE6,#1C7C3A)',tag:'即將開演',title:'SEVENTEEN\n台灣演唱會',sub:'📅 2025年9月6日｜高雄巨蛋',btn1:{label:'查看應援地圖',page:'map'},btn2:{label:'讓票資訊',page:'ticket'}},
+  {gradient:'linear-gradient(135deg,#FF9500,#FF3B30)',tag:'新品上架',title:'飯製小賣場\n本週精選',sub:'🛍️ 15件新品 · 立即瀏覽',btn1:{label:'前往小賣場',page:'merch'},btn2:{label:'上架商品',page:'merch'}},
+];
+let heroIdx=0;
+let heroTimer=null;
+
+const artistList=['全部','TXT','aespa','SEVENTEEN','BTS','Super Junior','BOYNEXTDOOR'];
+let calFilter='全部';
+let calDate=new Date(2025,7,1);
+
+const events=[
+  {id:1,date:'2025-08-16',title:'TXT 台北場 Day 1',artist:'TXT',venue:'台北大巨蛋',address:'台北市信義區忠孝東路五段1號',lat:25.0337,lng:121.5636,color:'#007AFF',likes:0,liked:false,comments:[]},
+  {id:2,date:'2025-08-17',title:'TXT 台北場 Day 2',artist:'TXT',venue:'台北大巨蛋',address:'台北市信義區忠孝東路五段1號',lat:25.0337,lng:121.5636,color:'#007AFF',likes:0,liked:false,comments:[]},
+  {id:3,date:'2025-08-23',title:'aespa 見面會',artist:'aespa',venue:'台北小巨蛋',address:'台北市松山區南京東路四段2號',lat:25.0514,lng:121.5503,color:'#BF5AF2',likes:0,liked:false,comments:[]},
+  {id:4,date:'2025-09-06',title:'SEVENTEEN 演唱會',artist:'SEVENTEEN',venue:'高雄巨蛋',address:'高雄市左營區博愛二路757號',lat:22.6871,lng:120.2972,color:'#32ADE6',likes:0,liked:false,comments:[]},
+  {id:5,date:'2025-09-20',title:'BTS 粉絲見面會',artist:'BTS',venue:'台北大巨蛋',address:'台北市信義區忠孝東路五段1號',lat:25.0337,lng:121.5636,color:'#FF9500',likes:0,liked:false,comments:[]},
+  {id:6,date:'2025-10-04',title:'Super Junior 演唱會',artist:'Super Junior',venue:'台北小巨蛋',address:'台北市松山區南京東路四段2號',lat:25.0514,lng:121.5503,color:'#FF3B30',likes:0,liked:false,comments:[]},
+];
+
+let pins=[
+  {id:1,title:'TXT Yeonjun photocard 套組',emoji:'💙',loc:'南門外全家旁',time:'12:00–14:00',cond:'免費',outfit:'藍色TXT帽T',contact:'@moabebe_tw',status:'active',saved:false,comments:[],svgX:240,svgY:105,isOwner:true},
+  {id:2,title:'aespa 應援手幅',emoji:'🖤',loc:'捷運站出口2',time:'14:00–16:00',cond:'轉推即可',outfit:'黑色連帽外套',contact:'@aeri_taiwan',status:'active',saved:false,comments:[],svgX:300,svgY:200,isOwner:false},
+  {id:3,title:'TXT 亮面貼紙',emoji:'⭐',loc:'麥當勞對面廣場',time:'16:00–18:00',cond:'憑票根',outfit:'白裙＋TXT袋',contact:'@txt_fansupport',status:'active',saved:false,comments:[],svgX:120,svgY:210,isOwner:false},
+  {id:4,title:'Kang Taehyun 生日應援',emoji:'🎂',loc:'東門捷運站',time:'11:00–12:00',cond:'免費',outfit:'粉色帽T',contact:'@taehyun_bday',status:'done',saved:false,comments:[{author:'@hoshi_tw',text:'已領到！謝謝！',img:null}],svgX:80,svgY:160,isOwner:false},
+];
+let pinIdCounter=5;
+let currentCommentPinId=null;
+let commentImgData=null;
+
+let tickets=[
+  {id:1,artist:'TXT 2025 台北',date:'2025-08-17',zone:'黃金內野 A',price:4800,cond:'需提供粉絲帳號截圖',contact:'@moabebe_sell',verified:true,status:'available'},
+  {id:2,artist:'aespa 台北見面會',date:'2025-08-23',zone:'一般 A',price:2800,cond:'希望讓給真正的粉絲',contact:'@myeri_sell',verified:true,status:'available'},
+  {id:3,artist:'SEVENTEEN 台灣',date:'2025-09-06',zone:'一般 B',price:1800,cond:'無特殊要求',contact:'@carat_sell',verified:false,status:'available'},
+];
+let ticketFilter={artist:'全部',price:'',verified:''};
+
+const merchs=[
+  {title:'Soobin 鑰匙圈',artist:'TXT',type:'鑰匙圈',emoji:'🔑',color:'#E8F2FF',price:'NT$180'},
+  {title:'aespa 全員卡',artist:'aespa',type:'卡片',emoji:'🃏',color:'#F5E8FF',price:'NT$120'},
+  {title:'Seventeen 手幅',artist:'SEVENTEEN',type:'手幅',emoji:'🎀',color:'#E8FFF0',price:'NT$250'},
+  {title:'TXT 亮面貼紙',artist:'TXT',type:'貼紙',emoji:'⭐',color:'#FFF8E8',price:'NT$80'},
+  {title:'Karina 壓克力立牌',artist:'aespa',type:'立牌',emoji:'🖼️',color:'#FFE8F0',price:'NT$350'},
+  {title:'JENO 生日卡組',artist:'NCT',type:'卡片',emoji:'💙',color:'#E8F5FF',price:'NT$160'},
+];
+
+const venues=[
+  {name:'台北大巨蛋',cap:'40,000',tags:['有頂棚','捷運直達'],bg:'#C5DEFF'},
+  {name:'台北小巨蛋',cap:'15,000',tags:['室內','停車場'],bg:'#D5EFFF'},
+  {name:'桃園棒球場',cap:'18,000',tags:['戶外','停車充足'],bg:'#C5F0E8'},
+  {name:'高雄巨蛋',cap:'15,000',tags:['室內','南部首選'],bg:'#E8F2FF'},
+];
+
+const notifications=[
+  {text:'你收藏的「TXT 台北場 Day 1」有新留言：「開賣了！」',time:'5 分鐘前',read:false},
+  {text:'你收藏的應援點「TXT Yeonjun photocard」狀態更新為發送中',time:'1 小時前',read:false},
+  {text:'SEVENTEEN 台灣演唱會 新增了應援地圖資訊',time:'昨天',read:true},
+  {text:'aespa 見面會 有粉絲投稿了新的應援物',time:'2 天前',read:true},
+];
+
+// ═══ HERO CAROUSEL ═══
+function buildHero(){
+  const track=document.getElementById('hero-track');
+  const dotsEl=document.getElementById('hero-dots');
+  track.innerHTML=heroSlides.map((s,i)=>`
+    <div class="hero-slide">
+      <div class="hero-slide-inner" style="background:${s.gradient}">
+        <div class="hero-tag">${s.tag}</div>
+        <div class="hero-title">${s.title.replace('\n','<br>')}</div>
+        <div class="hero-sub">${s.sub}</div>
+        <div class="hero-row">
+          <button class="hero-btn" onclick="goPage('${s.btn1.page}')">${s.btn1.label}</button>
+          <button class="hero-btn solid" style="color:${s.gradient.includes('007AFF')?'var(--blue)':s.gradient.includes('BF5AF2')?'#BF5AF2':s.gradient.includes('32ADE6')?'#32ADE6':'#FF9500'}" onclick="goPage('${s.btn2.page}')">${s.btn2.label}</button>
+        </div>
+      </div>
+    </div>`).join('');
+  dotsEl.innerHTML=heroSlides.map((_,i)=>`<div class="hero-dot${i===0?' active':''}" onclick="goHero(${i})"></div>`).join('');
+  startHeroAuto();
+}
+function goHero(i){
+  heroIdx=i;
+  document.getElementById('hero-track').style.transform=`translateX(-${i*100}%)`;
+  document.querySelectorAll('.hero-dot').forEach((d,j)=>d.classList.toggle('active',j===i));
+}
+function startHeroAuto(){
+  clearInterval(heroTimer);
+  heroTimer=setInterval(()=>goHero((heroIdx+1)%heroSlides.length),4000);
+}
+
+// ═══ FOLLOWING ═══
+function buildFollowing(){
+  const strip=document.getElementById('following-strip');
+  const emojis={TXT:'🌟',aespa:'🖤',SEVENTEEN:'💎',BTS:'💜',BOYNEXTDOOR:'🚪','Super Junior':'👑',NCT:'💚','Stray Kids':'🔥'};
+  const bgMap={TXT:'#E8F2FF',aespa:'#F5E8FF',SEVENTEEN:'#E8FFF0',BTS:'#FFF0E8',BOYNEXTDOOR:'#F5E8FF','Super Junior':'#FFF8E8',NCT:'#E8FFF0','Stray Kids':'#FFE8E8'};
+  strip.innerHTML=followedArtists.map(a=>`
+    <div class="follow-item" onclick="showToast('👀 ${a} 的最新動態')">
+      <div class="follow-avatar" style="background:${bgMap[a]||'#E8F2FF'}">
+        <div class="live-ring"></div>
+        <span style="font-size:22px">${emojis[a]||'⭐'}</span>
+      </div>
+      <div class="follow-name">${a}</div>
+    </div>`).join('')+`
+    <div class="follow-item" onclick="openSheet('sheet-follow-add')">
+      <div class="follow-avatar add-btn" style="font-size:24px;color:var(--text3)">＋</div>
+      <div class="follow-name">新增</div>
+    </div>`;
+  buildFollowAddList();
+}
+function buildFollowAddList(){
+  const c=document.getElementById('follow-add-list');
+  if(!c)return;
+  const emojis={TXT:'🌟',aespa:'🖤',SEVENTEEN:'💎',BTS:'💜',BOYNEXTDOOR:'🚪','Super Junior':'👑',NCT:'💚','Stray Kids':'🔥'};
+  c.innerHTML=allArtists.map(a=>{
+    const following=followedArtists.includes(a);
+    return `<div style="background:var(--bg);border-radius:var(--radius-sm);padding:12px;display:flex;align-items:center;gap:8px;cursor:pointer" onclick="toggleFollow('${a}',this)">
+      <span style="font-size:20px">${emojis[a]||'⭐'}</span>
+      <div style="flex:1;font-size:13px;font-weight:500">${a}</div>
+      <div style="width:22px;height:22px;border-radius:50%;background:${following?'var(--blue)':'var(--bg)'};border:1.5px solid ${following?'var(--blue)':'var(--text3)'};display:flex;align-items:center;justify-content:center;font-size:12px;color:${following?'#fff':'var(--text3)'}" id="fcheck-${a.replace(/ /g,'_')}">${following?'✓':''}</div>
+    </div>`;
+  }).join('');
+}
+function toggleFollow(a,row){
+  const idx=followedArtists.indexOf(a);
+  const check=document.getElementById('fcheck-'+a.replace(/ /g,'_'));
+  if(idx>=0){followedArtists.splice(idx,1);if(check){check.style.background='var(--bg)';check.style.borderColor='var(--text3)';check.style.color='var(--text3)';check.textContent='';}}
+  else{followedArtists.push(a);if(check){check.style.background='var(--blue)';check.style.borderColor='var(--blue)';check.style.color='#fff';check.textContent='✓';}}
+  buildFollowing();
+}
+
+// ═══ VOTES ═══
+function buildVotes(){
+  const c=document.getElementById('home-votes');if(!c)return;
+  const total=votes.reduce((a,b)=>a+b.votes,0);
+  const max=Math.max(...votes.map(v=>v.votes));
+  c.innerHTML=votes.map((v,i)=>{
+    const pct=Math.round(v.votes/total*100);
+    const voted=myVote===i;
+    return `<div class="vote-item">
+      <div class="vote-header"><div class="vote-name">${v.emoji} ${v.name}</div><div class="vote-count">${v.votes.toLocaleString()} 票</div></div>
+      <div class="vote-bar-bg"><div class="vote-bar" style="width:${Math.round(v.votes/max*100)}%"></div></div>
+      <div class="vote-row"><div class="vote-pct">${pct}%</div>
+      <button class="vote-btn${voted?' voted':''}" ${voted?'disabled':''} onclick="castVote(${i})">${voted?'✓ 已投票':'投票'}</button></div>
+    </div>`;
+  }).join('');
+}
+function castVote(i){if(myVote!==null)return;votes[i].votes++;myVote=i;buildVotes();showToast(`✅ 已投票給 ${votes[i].name}！`);}
+
+function buildBirthdays(){
+  const c=document.getElementById('home-bdays');if(!c)return;
+  c.innerHTML=birthdays.map(b=>`
+    <div class="bday-item">
+      <div class="bday-avatar" style="background:${b.bg}">${b.emoji}</div>
+      <div class="bday-info"><div class="bday-name">${b.name}</div><div class="bday-group">${b.group}</div></div>
+      <button class="bday-btn" onclick="showToast('🎂 投稿 ${b.name} 壽星圖！')">投稿圖片</button>
+    </div>`).join('');
+}
+
+// ═══ CALENDAR ═══
+function buildCalFilter(){
+  const c=document.getElementById('cal-filter');
+  c.innerHTML=artistList.map(a=>`<div class="filter-chip${a===calFilter?' active':''}" onclick="setCalFilter('${a}',this)">${a}</div>`).join('');
+}
+function setCalFilter(a,el){
+  calFilter=a;
+  document.querySelectorAll('#cal-filter .filter-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');buildCal();buildAllEventsList();
+}
+function buildCal(){
+  const y=calDate.getFullYear(),m=calDate.getMonth();
+  document.getElementById('cal-title').textContent=`${y}年${m+1}月`;
+  const first=new Date(y,m,1).getDay();
+  const daysInMonth=new Date(y,m+1,0).getDate();
+  const today=new Date();
+  const fe=calFilter==='全部'?events:events.filter(e=>e.artist===calFilter);
+  const grid=document.getElementById('cal-grid');
+  grid.innerHTML='<div class="cal-wd">日</div><div class="cal-wd">一</div><div class="cal-wd">二</div><div class="cal-wd">三</div><div class="cal-wd">四</div><div class="cal-wd">五</div><div class="cal-wd">六</div>';
+  for(let i=0;i<first;i++) grid.innerHTML+='<div class="cal-day-cell"><div class="cal-day-num other-month"></div></div>';
+  for(let d=1;d<=daysInMonth;d++){
+    const ds=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dayEvs=fe.filter(e=>e.date===ds);
+    const isToday=today.getFullYear()===y&&today.getMonth()===m&&today.getDate()===d;
+    const hasEv=dayEvs.length>0;
+    const nc=`cal-day-num${isToday?' today':''}${hasEv&&!isToday?' has-event':''}`;
+    const mini=dayEvs.slice(0,1).map(e=>`<div class="cal-event-mini" style="color:${e.color}">${e.title.split(' ')[0]}</div>`).join('');
+    grid.innerHTML+=`<div class="cal-day-cell" onclick="openBigAccordion()"><div class="${nc}">${d}</div><div style="display:flex;flex-direction:column;align-items:center;gap:1px;width:100%;margin-top:1px">${mini}</div></div>`;
+  }
+}
+function changeMonth(d){calDate.setMonth(calDate.getMonth()+d);buildCal();}
+
+function buildAllEventsList(){
+  const fe=calFilter==='全部'?events:events.filter(e=>e.artist===calFilter);
+  const cnt=fe.length;
+  document.getElementById('accordion-label').textContent=`活動一覽（${cnt} 筆）`;
+  const c=document.getElementById('all-events-list');
+  if(!fe.length){c.innerHTML='<div style="padding:16px;text-align:center;color:var(--text2);font-size:14px">此篩選下無活動</div>';return;}
+  c.innerHTML=fe.map(e=>`
+    <div class="event-row" onclick="openEventDetail(${e.id})">
+      <div class="event-dot" style="background:${e.color}"></div>
+      <div class="event-row-info">
+        <div class="event-row-title">${e.title}</div>
+        <div class="event-row-meta">${e.date}　${e.venue}</div>
+      </div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>`).join('');
+}
+function toggleBigAccordion(){
+  const body=document.getElementById('big-accordion-body');
+  const arr=document.getElementById('big-arr');
+  body.classList.toggle('open');arr.classList.toggle('open');
+}
+function openBigAccordion(){
+  document.getElementById('big-accordion-body').classList.add('open');
+  document.getElementById('big-arr').classList.add('open');
+  document.getElementById('event-big-accordion').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function openEventDetail(id){
+  const e=events.find(x=>x.id===id);if(!e)return;
+  const panel=document.getElementById('event-detail-panel');
+  const commentsHtml=e.comments.map(c=>`<div class="comment-item"><div class="comment-author">${c.author}</div><div class="comment-text">${c.text}</div></div>`).join('')||'<div style="color:var(--text3);font-size:13px;padding:8px 0">尚無留言，搶先留言！</div>';
+  panel.innerHTML=`<div class="event-detail" style="background:var(--card);border-radius:var(--radius);margin-top:8px;">
+    <div class="ev-detail-title">${e.title}</div>
+    <div class="ev-detail-meta">📅 ${e.date}<br>🏟 ${e.venue}<br>📍 ${e.address}</div>
+    <div class="map-link-row">
+      <button class="map-link" onclick="openGoogleMap(${e.lat},${e.lng},'${e.venue}')">🗺 Google Maps</button>
+      <button class="map-link" onclick="openAppleMap(${e.lat},${e.lng},'${e.venue}')">🍎 Apple Maps</button>
+    </div>
+    <button class="like-btn${e.liked?' liked':''}" id="like-btn-${e.id}" onclick="likeEvent(${e.id})">
+      👍 ${e.liked?'有幫助':'覺得有幫助？'} <span id="like-count-${e.id}">${e.likes}</span>
+    </button>
+    <div style="font-size:13px;font-weight:600;color:var(--text2);margin-bottom:8px">留言 / 補充資訊</div>
+    <div id="ev-comments-${e.id}">${commentsHtml}</div>
+    <div class="comment-input-row" style="margin-top:10px">
+      <input type="text" id="ev-ci-${e.id}" placeholder="留言或補充資訊...">
+      <button onclick="submitEventComment(${e.id})" style="background:var(--blue);color:#fff;border:none;border-radius:9px;padding:10px 14px;font-size:14px;cursor:pointer;">送</button>
+    </div>
+  </div>`;
+  panel.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function likeEvent(id){
+  const e=events.find(x=>x.id===id);if(!e)return;
+  e.liked=!e.liked;e.likes+=e.liked?1:-1;
+  const btn=document.getElementById('like-btn-'+id);
+  if(btn){btn.classList.toggle('liked',e.liked);btn.innerHTML=`👍 ${e.liked?'有幫助':'覺得有幫助？'} <span id="like-count-${e.id}">${e.likes}</span>`;}
+  showToast(e.liked?'👍 已標記為有幫助':'取消了有幫助');
+}
+function submitEventComment(id){
+  const inp=document.getElementById('ev-ci-'+id);
+  if(!inp||!inp.value.trim())return;
+  const e=events.find(x=>x.id===id);if(!e)return;
+  e.comments.push({author:'@我',text:inp.value.trim()});inp.value='';
+  document.getElementById('ev-comments-'+id).innerHTML=e.comments.map(c=>`<div class="comment-item"><div class="comment-author">${c.author}</div><div class="comment-text">${c.text}</div></div>`).join('');
+  showToast('✅ 留言成功！');
+}
+function openGoogleMap(lat,lng,name){window.open(`https://www.google.com/maps/search/?api=1&query=${lat},${lng}`,'_blank');}
+function openAppleMap(lat,lng,name){window.open(`https://maps.apple.com/?q=${encodeURIComponent(name)}&ll=${lat},${lng}`,'_blank');}
+
+// ═══ MAP / PINS ═══
+const timeSlots=['全部','11:00前','11:00–13:00','13:00–15:00','15:00–17:00','17:00後','已結束'];
+let pinTimeFilter='全部';
+function buildTimeFilter(){
+  const c=document.getElementById('map-time-filter');
+  c.innerHTML=timeSlots.map(t=>`<div class="filter-chip${t===pinTimeFilter?' active':''}" onclick="setPinFilter('${t}',this)">${t}</div>`).join('');
+}
+function setPinFilter(t,el){
+  pinTimeFilter=t;document.querySelectorAll('#map-time-filter .filter-chip').forEach(c=>c.classList.remove('active'));el.classList.add('active');buildPins();
+}
+function buildMapPins(){
+  const svgPins=document.getElementById('svg-pins');if(!svgPins)return;
+  svgPins.innerHTML=pins.map(p=>{
+    const col=p.status==='done'?'#AEAEB2':'#007AFF';
+    return `<g class="map-pin" onclick="scrollToPin(${p.id})">
+      <circle cx="${p.svgX}" cy="${p.svgY-18}" r="18" fill="${col}" stroke="white" stroke-width="2"/>
+      <polygon points="${p.svgX-6},${p.svgY-2} ${p.svgX+6},${p.svgY-2} ${p.svgX},${p.svgY+8}" fill="${col}"/>
+      <circle cx="${p.svgX}" cy="${p.svgY-18}" r="13" fill="white"/>
+      <text x="${p.svgX}" y="${p.svgY-13}" text-anchor="middle" font-size="14" font-family="system-ui">${p.emoji}</text>
+    </g>`;
+  }).join('');
+}
+function scrollToPin(id){const el=document.getElementById('pin-card-'+id);if(el)el.scrollIntoView({behavior:'smooth',block:'nearest'});}
+function buildPins(){
+  let list=pins;
+  if(pinTimeFilter==='已結束') list=pins.filter(p=>p.status==='done');
+  else if(pinTimeFilter!=='全部') list=pins.filter(p=>p.status==='active');
+  const active=pins.filter(p=>p.status==='active').length;
+  document.getElementById('pin-count').textContent=`（${active} 個進行中）`;
+  document.getElementById('pin-list').innerHTML=list.map(p=>`
+    <div class="pin-card" id="pin-card-${p.id}">
+      <div class="pin-top">
+        <div class="pin-thumb">${p.emoji}</div>
+        <div class="pin-info">
+          <div class="pin-title">${p.title}</div>
+          <div class="pin-meta">📍 ${p.loc}　🕐 ${p.time}<br>👕 ${p.outfit}　🎁 ${p.cond}</div>
+          <span class="pin-status-tag ${p.status==='active'?'status-active':'status-done'}">${p.status==='active'?'發送中':'已結束'}</span>
+        </div>
+      </div>
+      <div class="pin-actions">
+        <button class="pin-act-btn primary" onclick="togglePinSave(${p.id})">${p.saved?'★ 已收藏':'☆ 收藏'}</button>
+        <button class="pin-act-btn" onclick="openPinComment(${p.id})">💬 留言${p.comments.length>0?' ('+p.comments.length+')':''}</button>
+        ${p.contact?`<button class="pin-act-btn" onclick="showToast('📲 前往 ${p.contact}')">聯絡</button>`:''}
+        ${p.isOwner&&p.status==='active'?`<button class="pin-act-btn danger" onclick="markPinDone(${p.id})">標記結束</button>`:''}
+      </div>
+    </div>`).join('');
+  buildMapPins();
+}
+function togglePinSave(id){const p=pins.find(x=>x.id===id);if(!p)return;p.saved=!p.saved;buildPins();showToast(p.saved?'★ 已加入收藏':'☆ 已取消收藏');}
+function markPinDone(id){const p=pins.find(x=>x.id===id);if(!p)return;p.status='done';buildPins();showToast('✅ 已標記為發送完畢');}
+function openPinComment(id){
+  currentCommentPinId=id;commentImgData=null;
+  const p=pins.find(x=>x.id===id);if(!p)return;
+  document.getElementById('comment-sheet-title').textContent=`留言 — ${p.title}`;
+  renderPinComments(id);
+  document.getElementById('comment-text-input').value='';
+  document.getElementById('comment-img-preview-wrap').innerHTML='';
+  openSheet('sheet-comment');
+}
+function renderPinComments(id){
+  const p=pins.find(x=>x.id===id);if(!p)return;
+  document.getElementById('comment-sheet-list').innerHTML=p.comments.length?p.comments.map(c=>`
+    <div class="comment-item"><div class="comment-author">${c.author}</div><div class="comment-text">${c.text}</div>${c.img?`<img src="${c.img}" class="comment-img-preview">`:''}
+    </div>`).join(''):'<div style="color:var(--text3);font-size:13px;padding:12px 0">尚無留言</div>';
+}
+function previewCommentImg(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{commentImgData=e.target.result;document.getElementById('comment-img-preview-wrap').innerHTML=`<img src="${commentImgData}" style="max-width:100%;border-radius:8px;margin-top:8px;">`};
+  reader.readAsDataURL(file);
+}
+function submitComment(){
+  const p=pins.find(x=>x.id===currentCommentPinId);if(!p)return;
+  const text=document.getElementById('comment-text-input').value.trim();
+  if(!text&&!commentImgData){showToast('請輸入文字或圖片');return;}
+  p.comments.push({author:'@我',text:text||'',img:commentImgData||null});
+  renderPinComments(currentCommentPinId);
+  document.getElementById('comment-text-input').value='';
+  document.getElementById('comment-img-preview-wrap').innerHTML='';
+  commentImgData=null;showToast('✅ 留言送出！');
+}
+function addPin(){
+  const title=document.getElementById('new-pin-title').value.trim();
+  const loc=document.getElementById('new-pin-loc').value.trim();
+  if(!title||!loc){showToast('請填寫名稱和位置');return;}
+  const emoji=document.getElementById('new-pin-emoji').value.trim()||'📦';
+  pins.unshift({id:pinIdCounter++,title,emoji,loc,time:document.getElementById('new-pin-time').value,cond:document.getElementById('new-pin-cond').value.trim()||'免費',outfit:document.getElementById('new-pin-outfit').value.trim()||'—',contact:document.getElementById('new-pin-contact').value.trim(),status:'active',saved:false,comments:[],svgX:80+Math.random()*240,svgY:80+Math.random()*140,isOwner:true});
+  closeSheetById('sheet-pin');buildPins();showToast('📍 應援點已新增！');
+}
+
+// ═══ TICKETS ═══
+const ticketArtists=['全部','TXT','aespa','SEVENTEEN','BTS'];
+function buildTicketFilter(){
+  const c=document.getElementById('ticket-filter');
+  c.innerHTML=ticketArtists.map(a=>`<div class="filter-chip${ticketFilter.artist===a?' active':''}" onclick="setTicketArtist('${a}',this)">${a}</div>`).join('');
+}
+function setTicketArtist(a,el){ticketFilter.artist=a;document.querySelectorAll('#ticket-filter .filter-chip').forEach(c=>c.classList.remove('active'));el.classList.add('active');buildTickets();}
+function buildTickets(){
+  let list=tickets;
+  if(ticketFilter.artist!=='全部') list=list.filter(t=>t.artist.includes(ticketFilter.artist));
+  if(ticketFilter.price) list=list.filter(t=>t.price===parseInt(ticketFilter.price));
+  if(ticketFilter.verified) list=list.filter(t=>t.verified);
+  document.getElementById('ticket-list').innerHTML=list.length?list.map(t=>`
+    <div class="ticket-card">
+      <div class="ticket-header"><div class="ticket-artist">${t.artist}</div><div class="ticket-price">NT$${t.price.toLocaleString()}</div></div>
+      <div class="ticket-meta">📅 ${t.date}　🎫 ${t.zone}</div>
+      <div class="ticket-cond">🎯 讓票條件：${t.cond}</div>
+      <div class="ticket-footer">
+        <div class="ticket-user">${t.verified?'✅ 已驗證':'⚠️ 未驗證'} ${t.contact}</div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <button class="ticket-status-btn ${t.status==='available'?'has-ticket':'no-ticket'}" onclick="toggleTicketStatus(${t.id})">${t.status==='available'?'🟢 有票':'🔴 已讓出'}</button>
+          <button class="ticket-contact" onclick="showToast('📲 前往 ${t.contact} 私訊')">私訊</button>
+        </div>
+      </div>
+    </div>`).join(''):'<div style="text-align:center;padding:30px;color:var(--text2);font-size:14px">無符合條件的讓票</div>';
+}
+function toggleTicketStatus(id){const t=tickets.find(x=>x.id===id);if(!t)return;t.status=t.status==='available'?'sold':'available';buildTickets();showToast(t.status==='available'?'🟢 更新為有票':'🔴 更新為已讓出');}
+function applyTicketFilter(){ticketFilter.price=document.getElementById('tf-price').value;ticketFilter.verified=document.getElementById('tf-verified').value;closeSheetById('sheet-ticket-filter');buildTickets();showToast('✅ 篩選已套用');}
+
+// ═══ MERCH ═══
+const merchTypes=['全部','卡片','手幅','貼紙','鑰匙圈','立牌'];
+let merchFilter='全部';
+function buildMerchFilter(){document.getElementById('merch-filter').innerHTML=merchTypes.map(t=>`<div class="filter-chip${t===merchFilter?' active':''}" onclick="setMerchFilter('${t}',this)">${t}</div>`).join('');}
+function setMerchFilter(t,el){merchFilter=t;document.querySelectorAll('#merch-filter .filter-chip').forEach(c=>c.classList.remove('active'));el.classList.add('active');buildMerch();}
+function buildMerch(){
+  let list=merchs;if(merchFilter!=='全部')list=list.filter(m=>m.type===merchFilter);
+  document.getElementById('merch-list').innerHTML=list.map(m=>`
+    <div class="merch-card" onclick="showToast('🛍️ 前往賣貨便連結')">
+      <div class="merch-img" style="background:${m.color}">${m.emoji}</div>
+      <div class="merch-body"><div class="merch-title">${m.title}</div><div class="merch-artist">${m.artist}｜${m.type}</div>
+      <div class="merch-footer"><div class="merch-price">${m.price}</div><span style="font-size:11px;color:var(--text3)">賣貨便 →</span></div></div>
+    </div>`).join('');
+}
+
+// ═══ VENUE ═══
+function buildVenues(){
+  document.getElementById('venue-grid').innerHTML=venues.map((v,i)=>`
+    <div class="venue-card" onclick="selectVenue(${i})">
+      <div class="venue-top" style="background:${v.bg}">${v.name}</div>
+      <div class="venue-info"><div class="venue-name">${v.name}</div><div class="venue-cap">容量：${v.cap}人</div>
+      <div class="venue-tags">${v.tags.map(t=>`<span class="vtag">${t}</span>`).join('')}</div></div>
+    </div>`).join('');
+}
+function selectVenue(i){
+  document.getElementById('seat-title').textContent=`${venues[i].name}｜座位視角示意`;
+  document.getElementById('seat-section').style.display='block';
+  const rows=document.getElementById('seat-rows');rows.innerHTML='';
+  [[8,'gold'],[14,'gold'],[18,'blue2'],[20,'blue2'],[22,'blue2'],[20,'purple2'],[18,'purple2'],[14,'purple2'],[10,'mt']].forEach(([n,type])=>{
+    const row=document.createElement('div');row.className='seat-row-line';
+    for(let i=0;i<n;i++){const s=document.createElement('div');s.className=`seat ${type}`;row.appendChild(s);}
+    rows.appendChild(row);
+  });
+  document.getElementById('seat-section').scrollIntoView({behavior:'smooth'});
+}
+
+// ═══ NOTIFICATIONS ═══
+function buildNotifications(){
+  document.getElementById('notif-list').innerHTML=notifications.map(n=>`
+    <div class="notif-item">
+      <div class="${n.read?'notif-dot-read':'notif-dot-unread'}"></div>
+      <div><div class="notif-text">${n.text}</div><div class="notif-time">${n.time}</div></div>
+    </div>`).join('');
+}
+
+// ═══ NAV ═══
+const navOrder=['home','calendar','map','ticket','venue','merch'];
+function goPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  const idx=navOrder.indexOf(id);
+  if(idx>=0) document.querySelectorAll('.nav-item')[idx].classList.add('active');
+}
+
+// ═══ SHEETS ═══
+function openSheet(id){document.getElementById(id).classList.add('open');}
+function closeSheetOuter(e,id){if(e.target===document.getElementById(id))closeSheetById(id);}
+function closeSheetById(id){document.getElementById(id).classList.remove('open');}
+function submitForm(sheetId,msg){closeSheetById(sheetId);showToast(msg);}
+
+// ═══ TOAST ═══
+function showToast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2400);
+}
+
+// ═══ INIT ═══
+buildHero();
+buildFollowing();
+buildVotes();
+buildBirthdays();
+buildCalFilter();buildCal();buildAllEventsList();
+buildTimeFilter();buildPins();
+buildTicketFilter();buildTickets();
+buildMerchFilter();buildMerch();
+buildVenues();
+buildNotifications();
+goPage('home');
+</script>
+<script>
+if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{});}
+</script>
+</body>
+</html>
